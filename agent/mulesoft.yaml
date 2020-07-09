@@ -1,0 +1,7 @@
+init_config:
+
+instances:
+  - min_collection_interval: 300
+    organization_id: 12345
+    username: user
+    password: password

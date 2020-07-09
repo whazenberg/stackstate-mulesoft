@@ -1,0 +1,73 @@
+{
+  "nodes": [
+    {
+      "_type": "IdExtractorFunction",
+      "description": "MuleSoft component id extractor function for topology elements.",
+      "groovyScript": "element = topologyElement.asReadonlyMap()\n\nexternalId = element[\"externalId\"]\ntype = element[\"typeName\"].toLowerCase()\ndata = element[\"data\"]\n\nidentifiers = new HashSet()\n\nif(data.containsKey(\"identifiers\") && data[\"identifiers\"] instanceof List<String>) {\n    data[\"identifiers\"].each{ id ->\n        identifiers.add(id)\n    }\n}\n\nreturn Sts.createId(externalId, identifiers, type)\n",
+      "identifier": "urn:stackpack:mulesoft:shared:id-extractor-function:mulesoft-component-id-extractor",
+      "name": "MuleSoft component id extractor",
+      "parameters": [
+        {
+          "_type": "Parameter",
+          "multiple": false,
+          "name": "topologyElement",
+          "required": true,
+          "system": true,
+          "type": "STRUCT_TYPE"
+        }
+      ]
+    },
+    {
+      "_type": "IdExtractorFunction",
+      "description": "MuleSoft relation id extractor function for topology elements.",
+      "groovyScript": "element = topologyElement.asReadonlyMap()\n\nexternalId = element[\"externalId\"]\ntype = element[\"typeName\"].toLowerCase()\n\nreturn Sts.createId(externalId, new HashSet(), type)\n",
+      "id": -11,
+      "identifier": "urn:stackpack:mulesoft:shared:id-extractor-function:mulesoft-relation-id-extractor",
+      "name": "MuleSoft relation id extractor",
+      "parameters": [
+        {
+          "_type": "Parameter",
+          "id": -12,
+          "multiple": false,
+          "name": "topologyElement",
+          "required": true,
+          "system": true,
+          "type": "STRUCT_TYPE"
+        }
+      ]
+    },
+    {
+      "_type": "RelationTemplateFunction",
+      "handlebarsTemplate": "{\n    \"_type\": \"Relation\",\n    \"checks\": [],\n    \"streams\": [\n        \{{# join element.data.metrics \",\" \}}\n            {\n                \"_type\": \"MetricStream\",\n                \"name\": \"\{{ name \}}\",\n                \"query\": {\n                    \"conditions\": [\n                        \{{# join conditions \",\" \}}\n                            {\n                                \"key\": \"\{{ key \}}\",\n                                \"value\": \"\{{ value \}}\"\n                            }\n                        \{{/ join \}}\n                    ],\n                    \"_type\": \" MetricTelemetryQuery\",\n                    \"metricField\": \"\{{#if metricField \}}\{{ metricField \}}\{{else\}}value\{{/if\}}\",\n                    \"aggregation\": \"\{{#if aggregation \}}\{{ aggregation \}}\{{else\}}MEAN\{{/if\}}\"\n                },\n                \"dataSource\": \{{ resolve \"DataSource\" \"StackState Metrics\" \}},\n                \"dataType\": \"METRICS\",\n                \"id\": \{{ id \}}\n            }\n        \{{/ join \}}    \n    ],\n    \"labels\": [],\n    \"name\": \"\{{ element.sourceExternalId \}} --> \{{ element.targetExternalId \}}\",\n    \{{#if element.data.description\}}\n    \"description\": \"\{{ element.data.description \}}\",\n    \{{/if\}}\n    \"type\": \{{ resolveOrCreate \"RelationType\" element.type.name \"Auto-synced Relation\" \}},\n    \"dependencyDirection\": \"\{{#if element.data.dependencyDirection \}}\{{ element.data.dependencyDirection \}}\{{else\}}ONE_WAY\{{/if\}}\",\n    \"source\": \{{ element.sourceId \}},\n    \"target\": \{{ element.targetId \}}\n}\n",
+      "id": -7,
+      "identifier": "urn:stackpack:mulesoft:shared:relation-template-function:mulesoft-relation-template",
+      "name": "mulesoft-relation-template",
+      "parameters": [
+        {
+          "_type": "Parameter",
+          "id": -8,
+          "multiple": false,
+          "name": "element",
+          "required": true,
+          "system": false,
+          "type": "STRUCT_TYPE"
+        }
+      ]
+    },
+    {
+      "_type": "ComponentTemplateFunction",
+      "handlebarsTemplate": "{\n    \"_type\": \"Component\",\n    \"checks\": [],\n    \"streams\": [],\n    \"labels\": [\n        \{{#if element.data.labels \}}\n            \{{# join element.data.labels \",\" \"\" \",\" \}}\n            {\n            \"_type\": \"Label\",\n            \"name\": \"\{{ this \}}\"\n            }\n            \{{/ join \}}\n        \{{/if\}}\n        {\n            \"_type\": \"Label\",\n            \"name\": \"mulesoft.organization_id:1235\"\n        }\n        \{{#if element.data.tags \}}\n            \{{# join element.data.tags \",\" \",\" \"\" \}}\n            {\n              \"_type\": \"Label\",\n              \"name\": \"\{{ this \}}\"\n            }\n            \{{/ join \}}\n        \{{/if\}}\n    ],\n    \"name\": \"\{{#if element.data.name\}}\{{ element.data.name \}}\{{else\}}\{{ element.externalId \}}\{{/if\}}\",\n    \{{#if element.data.description\}}\n    \"description\": \"\{{ element.data.description \}}\",\n    \{{/if\}}\n    \"type\" : \{{ resolveOrCreate \"ComponentType\" element.type.name \"Unspecified\" \}},\n    \"version\": \"\{{ element.data.version \}}\",\n    \"layer\": \{{ resolveOrCreate \"Layer\" element.data.layer \"Unspecified\" \}},\n    \"domain\": \{{ resolveOrCreate \"Domain\" element.data.domain \"Unspecified\" \}},\n    \"environments\": [\n        \{{ resolveOrCreate \"Environment\" element.data.environment \"Unspecified\" \}}\n    ]\n}\n",
+      "identifier": "urn:stackpack:mulesoft:shared:component-template-function:mulesoft-component-template",
+      "name": "mulesoft-component-template",
+      "parameters": [{
+        "_type": "Parameter",
+        "multiple": false,
+        "name": "element",
+        "required": true,
+        "system": false,
+        "type": "STRUCT_TYPE"
+      }]
+    }
+  ],
+  "version": "0.1"
+}

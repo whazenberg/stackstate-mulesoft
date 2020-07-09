@@ -1,0 +1,103 @@
+{
+  "nodes": [
+    {
+      "_type": "DataSource",
+      "config": {
+        "_type": "Sts.StsTopologyDataSourceConfig",
+        "autoExpireElements": false,
+        "expireElementsAfter": 172800000,
+        "id": -2,
+        "integrationType": "{{integrationType}}",
+        "supportedDataTypes": [
+          "TOPOLOGY_ELEMENTS"
+        ],
+        "supportedWindowingMethods": [],
+        "topic": "{{topicName}}"
+      },
+      "description": "DataSource that was generated for {{integrationType}} {{organizationId}}",
+      "extTopology": {
+        "_type": "ExtTopology",
+        "dataSource": -1,
+        "id": -3,
+        "settings": {
+          "_type": "TopologySyncSettings",
+          "cleanupExpiredElements": false,
+          "cleanupInterval": 3600000,
+          "id": -4,
+          "maxBatchSize": 200,
+          "maxBatchesPerSecond": 5
+        }
+      },
+      "id": -1,
+      "identifier": "urn:stackpack:mulesoft:instance:{{instanceId}}:data-source:datasource-{{integrationType}}-{{organizationId}}",
+      "name": "DataSource {{integrationType}} {{organizationId}}",
+      "pluginId": "Sts",
+      "uiRequestTimeout": 15000
+    },
+    {
+      "_type": "Sync",
+      "componentActions": [],
+      "defaultComponentAction": {
+        "_type": "SyncActionCreateComponent",
+        "id": -15,
+        "mergeStrategy": "MergePreferTheirs",
+        "templateFunction": {{ get "urn:stackpack:mulesoft:shared:component-template-function:mulesoft-component-template"}},
+        "type": "default_component_mapping"
+      },
+      "defaultRelationAction": {
+        "_type": "SyncActionCreateRelation",
+        "id": -16,
+        "mergeStrategy": "MergePreferTheirs",
+        "templateFunction": {{ get "urn:stackpack:mulesoft:shared:relation-template-function:mulesoft-relation-template" }},
+        "type": "default_relation_mapping"
+      },
+      "extTopology": -3,
+      "id": -13,
+      "identifier": "urn:stackpack:mulesoft:instance:{{instanceId}}:sync:synchronisation-{{integrationType}}-{{organizationId}}",
+      "name": "Synchronization {{integrationType}} {{organizationId}}",
+      "relationActions": [],
+      "topologyDataQuery": {
+        "_type": "Sts.StsTopologyElementsQuery",
+        "componentIdExtractorFunction": {{get "urn:stackpack:mulesoft:shared:id-extractor-function:mulesoft-component-id-extractor"}},
+        "consumerOffsetStartAtEarliest": false,
+        "id": -14,
+        "relationIdExtractorFunction": {{get "urn:stackpack:mulesoft:shared:id-extractor-function:mulesoft-relation-id-extractor"}}
+      }
+    },
+    {
+      "_type": "QueryView",
+      "groupedByDomains": true,
+      "groupedByLayers": true,
+      "groupingEnabled": true,
+      "id": -111,
+      "identifier": "urn:stackpack:mulesoft:instance:{{instanceId}}:query-view:{{integrationType}}-{{organizationId}}",
+      "minimumGroupSize": 10,
+      "name": "MuleSoft - {{organizationId}}",
+      "query": "label IN ('mulesoft.organization_id:{{organizationId}}')",
+      "queryVersion": "0.0.1",
+      "showIndirectRelations": false,
+      "viewHealthStateConfiguration": {
+        "_type": "ViewHealthStateConfiguration",
+        "arguments": [
+          {
+            "_type": "ArgumentLongVal",
+            "id": -113,
+            "parameter": {{ get "urn:stackpack:common:view-health-state-configuration-function:minimum-health-states" "Type=Parameter;Name=minCriticalHealthStates" }},
+            "value": 10
+          },
+          {
+            "_type": "ArgumentLongVal",
+            "id": -114,
+            "parameter": {{ get "urn:stackpack:common:view-health-state-configuration-function:minimum-health-states" "Type=Parameter;Name=minDeviatingHealthStates" }},
+            "value": 10
+          }
+        ],
+        "enabled": true,
+        "function": {{ get "urn:stackpack:common:view-health-state-configuration-function:minimum-health-states" }},
+        "id": -112
+      }
+    }
+  ],
+  "timestamp": "2019-05-31T18:03:37Z",
+  "version": "0.1"
+}
