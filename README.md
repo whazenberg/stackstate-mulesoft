@@ -1,4 +1,4 @@
-# Mulesoft for StackState
+# StackState MuleSoft integration/StackPack
 
 Stub.
 
